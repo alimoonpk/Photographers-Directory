@@ -120,6 +120,8 @@
 		<ul data-submenu-title="Main">
 			<li class="active"><a href="dashboard.php"><i class="sl sl-icon-settings"></i> Dashboard</a></li>
              <li><a href="dashboard-add-listing.php"><i class="sl sl-icon-layers"></i>Add New Listing</a></li>
+            <li><a href="dashboard.php"><i class="sl sl-icon-layers"></i>Edit Listings</a></li>
+             <li><a href="dashboard.php"><i class="sl sl-icon-layers"></i>Delete Listings</a></li>
 		</ul>
 		
 		
@@ -155,7 +157,9 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="notification success closeable margin-bottom-30">
-					<p>Your listing <strong>for Wedding Photography</strong> has been approved!</p>
+					<p><?php echo Message();
+	      echo SuccessMessage();
+	?></p>
 					<a class="close" href="#"></a>
 				</div>
 			</div>
@@ -192,7 +196,7 @@
 			<!-- Item -->
 			<div class="col-lg-3 col-md-6">
 				<div class="dashboard-stat color-4">
-					<div class="dashboard-stat-content"><h4>126</h4> <span>Times Bookmarked</span></div>
+					<div class="dashboard-stat-content"><h4>1</h4> <span>Active User</span></div>
 					<div class="dashboard-stat-icon"><i class="im im-icon-Heart"></i></div>
 				</div>
 			</div>
@@ -201,91 +205,87 @@
 
 		<div class="row">
 			
-			<!-- Recent Activity -->
-			<div class="col-lg-6 col-md-12">
-				<div class="dashboard-list-box with-icons margin-top-20">
-					<h4>Recent Activities</h4>
+			<!-- Recent Listings -->
+			<div class="col-lg-12 col-md-12">
+                
+				
+					<h4>Recent Listings</h4>
+					<?php
+		global $ConnectingDB;
+		// Query when Search Button is Active
+		if(isset($_GET["SearchButton"])){
+        $Search=$_GET["Search"];
+        $Category=$_GET["Category"];
+			
+		$ViewQuery="SELECT * FROM photographerdata
+		WHERE studioname LIKE '%$Search%' AND category='$Category'
+        ORDER BY id desc";
+		}
+        
+		// The Default Query for Blog.php Page
+		else{
+            
+		$ViewQuery="SELECT * FROM photographerdata ORDER BY id desc LIMIT 0,100";}
+		$Execute=mysql_query($ViewQuery);
+		while($DataRows=mysql_fetch_array($Execute)){
+			$PostId=$DataRows["id"];
+			$DateTime=$DataRows["datetime"];
+			$Studioname=$DataRows["studioname"];
+			$Category=$DataRows["category"];
+			$Image=$DataRows["pic1"];
+            $Cell=$DataRows["cell"];		
+		?>
+                
+        <?php
+$ConnectingDB; 
+$ExtractingCommentsQuery="SELECT COUNT(*) FROM reviews
+WHERE photographer_id='$PostId' ";
+$ExecuteRating=mysql_query($ExtractingCommentsQuery);
+$RowsRating=mysql_fetch_array($ExecuteRating);
+$TotalRatingCount=array_shift($RowsRating);
+            
+$AvgQuery="SELECT AVG(rating) FROM reviews
+WHERE photographer_id='$PostId' ";
+$ExecuteAvg=mysql_query($AvgQuery);
+$RowsAvg=mysql_fetch_array($ExecuteAvg);
+$AvgRating=array_shift($RowsAvg);
+            
+?>
+               
+                <div class="dashboard-list-box with-icons margin-top-20">
+                    <div class="col-lg-12 col-md-12">
 					<ul>
 						<li>
-							<i class="list-box-icon sl sl-icon-layers"></i> Your listing <strong><a href="#">for Wedding Photography</a></strong> has been approved!
-							<a href="#" class="close-list-item"><i class="fa fa-close"></i></a>
+							<i class="list-box-icon sl sl-icon-layers"></i>
+                            <a href="listings-single-page.php?id=<?php echo $PostId; ?>"</a>
+                            <?php echo htmlentities($Studioname); ?>
+							<a href="dashboard-delete-listing.php?Delete=<?php echo $PostId; ?>" class="close-list-item"><i class="fa fa-close"></i></a>
+                            <a href="dashboard-edit-listing.php?Edit=<?php echo $PostId; ?>" class="sl sl-icon-settings"><i class="fa fa-close"></i></a>
 						</li>
+                        
+                        </ul>
+						</a>
+					</div>
+				</div>
+                
+                
+                <?php } ?>
+                
+                 
+                
+				<!-- Listing Item / End -->
+                
+        
 
-						<li>
-							<i class="list-box-icon sl sl-icon-star"></i> Muhammed Ali left a review <div class="numerical-rating" data-rating="5.0"></div> on <strong><a href="#">Dream Studio</a></strong>
-							<a href="#" class="close-list-item"><i class="fa fa-close"></i></a>
-						</li>
+			
 
-						<li>
-							<i class="list-box-icon sl sl-icon-heart"></i> Asad Raza bookmarked your <strong><a href="#">Shutter Up Studio</a></strong> listing!
-							<a href="#" class="close-list-item"><i class="fa fa-close"></i></a>
-						</li>
-
-						
-						<li>
-							<i class="list-box-icon sl sl-icon-star"></i> Abtahaj Ashraf left a review <div class="numerical-rating" data-rating="2.5"></div> on <strong><a href="#">Strike A Pose Photo Studio</a></strong>
-							<a href="#" class="close-list-item"><i class="fa fa-close"></i></a>
-						</li>
-					</ul>
+			</div>
 				</div>
 			</div>
 			
 			<!-- Invoices -->
-			<div class="col-lg-6 col-md-12">
-				<div class="dashboard-list-box invoices with-icons margin-top-20">
-					<h4>Invoices</h4>
-					<ul>
-						
-						<li><i class="list-box-icon sl sl-icon-doc"></i>
-							<strong>Professional Plan</strong>
-							<ul>
-								<li class="unpaid">Unpaid</li>
-								<li>Order: #00124</li>
-								<li>Date: 20/07/2017</li>
-							</ul>
-							<div class="buttons-to-right">
-								<a href="dashboard-invoice.php" class="button gray">View Invoice</a>
-							</div>
-						</li>
-						
-						<li><i class="list-box-icon sl sl-icon-doc"></i>
-							<strong>Extended Plan</strong>
-							<ul>
-								<li class="paid">Paid</li>
-								<li>Order: #00108</li>
-								<li>Date: 14/07/2017</li>
-							</ul>
-							<div class="buttons-to-right">
-								<a href="dashboard-invoice.php" class="button gray">View Invoice</a>
-							</div>
-						</li>
-
-						<li><i class="list-box-icon sl sl-icon-doc"></i>
-							<strong>Extended Plan</strong>
-							<ul>
-								<li class="paid">Paid</li>
-								<li>Order: #00097</li>
-								<li>Date: 10/07/2017</li>
-							</ul>
-							<div class="buttons-to-right">
-								<a href="dashboard-invoice.php" class="button gray">View Invoice</a>
-							</div>
-						</li>
-						
-						<li><i class="list-box-icon sl sl-icon-doc"></i>
-							<strong>Basic Plan</strong>
-							<ul>
-								<li class="paid">Paid</li>
-								<li>Order: #00091</li>
-								<li>Date: 30/06/2017</li>
-							</ul>
-							<div class="buttons-to-right">
-								<a href="dashboard-invoice.php" class="button gray">View Invoice</a>
-							</div>
-						</li>
-
-					</ul>
-				</div>
+			<div class="col-lg-12 col-md-12">
+				
 			</div>
 
 
