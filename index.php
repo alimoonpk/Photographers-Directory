@@ -92,7 +92,7 @@ else{
 							</ul>
 						</li>
 
-						<li><a href="#">Contact</a>
+						<li><a href="contact.php">Contact</a>
 						
 						</li>
 						
